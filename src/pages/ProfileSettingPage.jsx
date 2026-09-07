@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './ProfileSettingPage.css'
+import { supabase } from '../supabase'
 
 function ProfileSettingPage({
   registeredUser,
@@ -16,20 +17,279 @@ function ProfileSettingPage({
     registeredUser.profileImage || ''
   )
 
-  const handleSave = () => {
-    setRegisteredUser({
-      ...registeredUser,
-      nickname: nickname,
-      message: message,
-      highestTier: highestTier,
-      currentTier: currentTier,
-      mainPosition: mainPosition,
-      profileImage: profileImage
-    })
+  const [selectedImageFile, setSelectedImageFile] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState('')
+  const [saving, setSaving] = useState(false)
 
-    alert('프로필이 저장되었습니다.')
-    setPage('lobby')
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl)
+      }
+    }
+  }, [previewUrl])
+
+
+  // =========================
+  // 프로필 사진 선택
+  // =========================
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 선택할 수 있습니다.')
+      return
+    }
+
+    // 너무 큰 파일 업로드 방지
+    if (file.size > 5 * 1024 * 1024) {
+      alert('프로필 사진은 5MB 이하만 업로드할 수 있습니다.')
+      return
+    }
+
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
+
+    const nextPreviewUrl =
+      URL.createObjectURL(file)
+
+    setSelectedImageFile(file)
+    setPreviewUrl(nextPreviewUrl)
+    setProfileImage(nextPreviewUrl)
   }
+
+
+  // =========================
+  // 프로필 사진 삭제
+  // =========================
+
+  const handleDeleteImage = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
+
+    setPreviewUrl('')
+    setSelectedImageFile(null)
+    setProfileImage('')
+  }
+
+
+  // =========================
+  // Storage 업로드
+  // =========================
+
+  const uploadProfileImage =
+    async () => {
+
+      if (!selectedImageFile) {
+        // 기존 사진 유지 또는 삭제 상태
+        return profileImage.startsWith('blob:')
+          ? ''
+          : profileImage
+      }
+
+      const {
+        data: {
+          user
+        }
+      } =
+        await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error('로그인 정보를 찾을 수 없습니다.')
+      }
+
+      const extension =
+        selectedImageFile.name
+          .split('.')
+          .pop()
+          ?.toLowerCase() || 'png'
+
+      const filePath =
+        `${user.id}/${Date.now()}.${extension}`
+
+      const {
+        error: uploadError
+      } =
+        await supabase.storage
+          .from('profile-images')
+          .upload(
+            filePath,
+            selectedImageFile,
+            {
+              cacheControl: '3600',
+              upsert: false
+            }
+          )
+
+      if (uploadError) {
+        throw uploadError
+      }
+
+      const {
+        data
+      } =
+        supabase.storage
+          .from('profile-images')
+          .getPublicUrl(filePath)
+
+      return data.publicUrl
+    }
+
+
+  // =========================
+  // 저장
+  // =========================
+
+  const handleSave =
+    async () => {
+
+      if (saving) {
+        return
+      }
+
+      const trimmedNickname =
+        nickname.trim()
+
+      if (!trimmedNickname) {
+        alert('닉네임을 입력해주세요.')
+        return
+      }
+
+      setSaving(true)
+
+      try {
+
+        const finalProfileImage =
+          await uploadProfileImage()
+
+
+        // =========================
+        // Supabase Auth 메타데이터 수정
+        // =========================
+
+        const {
+          error: authError
+        } =
+          await supabase.auth.updateUser({
+            data: {
+              userId:
+                registeredUser.userId,
+
+              nickname:
+                trimmedNickname,
+
+              message,
+
+              highestTier,
+
+              currentTier,
+
+              mainPosition,
+
+              profileImage:
+                finalProfileImage
+            }
+          })
+
+        if (authError) {
+          throw authError
+        }
+
+
+        // =========================
+        // 이미 들어가 있는 모든 방 참가자 정보 수정
+        // =========================
+
+        const {
+          error: participantError
+        } =
+          await supabase
+            .from('room_participants')
+            .update({
+              nickname:
+                trimmedNickname,
+
+              message,
+
+              highest_tier:
+                highestTier,
+
+              current_tier:
+                currentTier,
+
+              main_position:
+                mainPosition,
+
+              profile_image:
+                finalProfileImage
+            })
+            .eq(
+              'user_id',
+              registeredUser.userId
+            )
+
+        if (participantError) {
+          throw participantError
+        }
+
+
+        const updatedUser = {
+          ...registeredUser,
+
+          nickname:
+            trimmedNickname,
+
+          message,
+
+          highestTier,
+
+          currentTier,
+
+          mainPosition,
+
+          profileImage:
+            finalProfileImage
+        }
+
+        setRegisteredUser(
+          updatedUser
+        )
+
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl)
+        }
+
+        setPreviewUrl('')
+        setSelectedImageFile(null)
+        setProfileImage(finalProfileImage)
+
+        alert('프로필이 저장되었습니다.')
+        setPage('lobby')
+
+      } catch (error) {
+
+        console.error(
+          '프로필 저장 오류:',
+          error
+        )
+
+        alert(
+          `프로필 저장 중 오류가 발생했습니다.\n${error.message || ''}`
+        )
+
+      } finally {
+
+        setSaving(false)
+      }
+    }
+
 
   return (
     <div className="profile-setting-page">
@@ -70,21 +330,14 @@ function ProfileSettingPage({
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files[0]
-
-                  if (file) {
-                    const imageUrl = URL.createObjectURL(file)
-                    setProfileImage(imageUrl)
-                  }
-                }}
+                onChange={handleImageChange}
               />
             </label>
 
             <button
               type="button"
               className="profile-delete-button"
-              onClick={() => setProfileImage('')}
+              onClick={handleDeleteImage}
             >
               사진 삭제
             </button>
@@ -172,8 +425,13 @@ function ProfileSettingPage({
 
 
         {/* 저장 */}
-        <button onClick={handleSave}>
-          저장하기
+        <button
+          onClick={handleSave}
+          disabled={saving}
+        >
+          {saving
+            ? '저장 중...'
+            : '저장하기'}
         </button>
 
       </div>

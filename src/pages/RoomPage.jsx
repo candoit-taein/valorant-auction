@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import './RoomPage.css'
+import { supabase } from '../supabase'
 
 
 function RoomPage({
@@ -58,6 +59,14 @@ function RoomPage({
   const currentBidRef = useRef(currentBid)
   const highestBidTeamRef = useRef(highestBidTeam)
 
+  // 입찰할 때마다 남은 시간을 늘리기 위한
+  // 실제 타이머 종료 시각
+  const auctionEndTimeRef = useRef(null)
+
+  // 방장이 방을 종료했을 때
+  // 같은 알림이 여러 번 뜨는 것을 방지
+  const roomClosedHandledRef = useRef(false)
+
 
   useEffect(() => {
     currentBidRef.current = currentBid
@@ -67,6 +76,474 @@ function RoomPage({
   useEffect(() => {
     highestBidTeamRef.current = highestBidTeam
   }, [highestBidTeam])
+
+
+  // =========================
+  // Supabase 실시간 상태용 최신값
+  // =========================
+
+  const teamsRef = useRef(teams)
+  const auctionPlayersRef = useRef(auctionPlayers)
+  const auctionStartedRef = useRef(auctionStarted)
+  const timeLeftRef = useRef(timeLeft)
+  const auctionLogsRef = useRef(auctionLogs)
+
+
+  useEffect(() => {
+    teamsRef.current = teams
+  }, [teams])
+
+
+  useEffect(() => {
+    auctionPlayersRef.current = auctionPlayers
+  }, [auctionPlayers])
+
+
+  useEffect(() => {
+    auctionStartedRef.current = auctionStarted
+  }, [auctionStarted])
+
+
+  useEffect(() => {
+    timeLeftRef.current = timeLeft
+  }, [timeLeft])
+
+
+  useEffect(() => {
+    auctionLogsRef.current = auctionLogs
+  }, [auctionLogs])
+
+
+  // =========================
+  // 방 상태 Supabase 저장
+  // =========================
+
+  const saveRoomState =
+    async (overrides = {}) => {
+
+      if (!roomCode) {
+        return false
+      }
+
+
+      const payload = {
+        room_code:
+          roomCode,
+
+        teams:
+          overrides.teams ??
+          teamsRef.current,
+
+        auction_players:
+          overrides.auctionPlayers ??
+          auctionPlayersRef.current,
+
+        auction_started:
+          overrides.auctionStarted ??
+          auctionStartedRef.current,
+
+        time_left:
+          overrides.timeLeft ??
+          timeLeftRef.current,
+
+        current_bid:
+          overrides.currentBid ??
+          currentBidRef.current,
+
+        highest_bid_team:
+          overrides.highestBidTeam ??
+          highestBidTeamRef.current,
+
+        auction_logs:
+          overrides.auctionLogs ??
+          auctionLogsRef.current,
+
+        updated_at:
+          new Date().toISOString()
+      }
+
+
+      const {
+        error
+      } =
+        await supabase
+          .from('room_states')
+          .upsert(
+            payload,
+            {
+              onConflict: 'room_code'
+            }
+          )
+
+
+      if (error) {
+
+        console.error(
+          '경매방 상태 저장 오류:',
+          error
+        )
+
+        return false
+      }
+
+
+      return true
+    }
+
+
+  // =========================
+  // Supabase 상태를 화면에 적용
+  // =========================
+
+  const applyRemoteRoomState = (
+    roomState
+  ) => {
+
+    if (!roomState) {
+      return
+    }
+
+
+    // =========================
+    // 방장이 방을 종료한 경우
+    // 참가자 전원 로비로 이동
+    // =========================
+
+    if (
+      roomState.room_closed === true
+    ) {
+
+      if (
+        !roomClosedHandledRef.current
+      ) {
+
+        roomClosedHandledRef.current = true
+
+        if (!isAdmin) {
+          alert(
+            '방장이 방을 종료했습니다.'
+          )
+        }
+
+        setPage('lobby')
+      }
+
+      return
+    }
+
+
+    const nextTeams =
+      Array.isArray(roomState.teams)
+        ? roomState.teams
+        : []
+
+    const nextAuctionPlayers =
+      Array.isArray(
+        roomState.auction_players
+      )
+        ? roomState.auction_players
+        : []
+
+    const nextAuctionStarted =
+      Boolean(
+        roomState.auction_started
+      )
+
+    const nextTimeLeft =
+      Number(
+        roomState.time_left ?? 15
+      )
+
+    const nextCurrentBid =
+      Number(
+        roomState.current_bid ?? 0
+      )
+
+    const nextHighestBidTeam =
+      roomState.highest_bid_team ?? null
+
+    const nextAuctionLogs =
+      Array.isArray(
+        roomState.auction_logs
+      )
+        ? roomState.auction_logs
+        : []
+
+
+    teamsRef.current =
+      nextTeams
+
+    auctionPlayersRef.current =
+      nextAuctionPlayers
+
+    auctionStartedRef.current =
+      nextAuctionStarted
+
+    timeLeftRef.current =
+      nextTimeLeft
+
+    if (nextAuctionStarted) {
+
+      auctionEndTimeRef.current =
+        performance.now() +
+        Math.max(
+          0,
+          nextTimeLeft
+        ) * 1000
+
+    } else {
+
+      auctionEndTimeRef.current =
+        null
+    }
+
+    currentBidRef.current =
+      nextCurrentBid
+
+    highestBidTeamRef.current =
+      nextHighestBidTeam
+
+    auctionLogsRef.current =
+      nextAuctionLogs
+
+
+    setTeams(
+      nextTeams
+    )
+
+    setAuctionPlayers(
+      nextAuctionPlayers
+    )
+
+    setAuctionStarted(
+      nextAuctionStarted
+    )
+
+    setTimeLeft(
+      nextTimeLeft
+    )
+
+    setCurrentBid(
+      nextCurrentBid
+    )
+
+    setHighestBidTeam(
+      nextHighestBidTeam
+    )
+
+    setAuctionLogs(
+      nextAuctionLogs
+    )
+  }
+
+
+  // =========================
+  // 방 입장 시 상태 불러오기 +
+  // room_states Realtime 구독
+  // =========================
+
+  useEffect(() => {
+
+    if (!roomCode) {
+      return
+    }
+
+
+    let cancelled = false
+
+
+    const initializeRoomState =
+      async () => {
+
+        const {
+          data,
+          error
+        } =
+          await supabase
+            .from('room_states')
+            .select('*')
+            .eq(
+              'room_code',
+              roomCode
+            )
+            .maybeSingle()
+
+
+        if (cancelled) {
+          return
+        }
+
+
+        if (error) {
+
+          console.error(
+            '경매방 상태 조회 오류:',
+            error
+          )
+
+          return
+        }
+
+
+        if (data) {
+
+          applyRemoteRoomState(
+            data
+          )
+
+          return
+        }
+
+
+        // 기존 방이라 room_states 행이 없으면
+        // 방장이 최초 상태를 생성
+        if (isAdmin) {
+
+          await saveRoomState({
+            teams:
+              teamsRef.current,
+
+            auctionPlayers:
+              auctionPlayersRef.current,
+
+            auctionStarted:
+              false,
+
+            timeLeft:
+              15,
+
+            currentBid:
+              0,
+
+            highestBidTeam:
+              null,
+
+            auctionLogs:
+              auctionLogsRef.current
+          })
+        }
+      }
+
+
+    initializeRoomState()
+
+
+    const channel =
+      supabase
+        .channel(
+          `room-state-${roomCode}`
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+
+            schema: 'public',
+
+            table: 'room_states',
+
+            filter:
+              `room_code=eq.${roomCode}`
+          },
+
+          (payload) => {
+
+            if (
+              payload.new &&
+              payload.new.room_code ===
+                roomCode
+            ) {
+
+              applyRemoteRoomState(
+                payload.new
+              )
+            }
+          }
+        )
+        .subscribe()
+
+
+    return () => {
+
+      cancelled = true
+
+      supabase.removeChannel(
+        channel
+      )
+    }
+
+  }, [
+    roomCode,
+    isAdmin
+  ])
+
+
+  // =========================
+  // 로비로 나가기
+  // =========================
+
+  const handleExitRoom =
+    async () => {
+
+      // 일반 참가자는 자기만 로비로 이동
+      if (!isAdmin) {
+
+        setPage('lobby')
+        return
+      }
+
+
+      // 방장은 방 자체를 종료
+      const confirmed =
+        window.confirm(
+          '방장이 나가면 이 방은 종료되고 모든 참가자가 로비로 이동합니다.\n정말 나가시겠습니까?'
+        )
+
+
+      if (!confirmed) {
+        return
+      }
+
+
+      const {
+        error
+      } =
+        await supabase
+          .from('room_states')
+          .update({
+            room_closed: true,
+            auction_started: false,
+            updated_at:
+              new Date().toISOString()
+          })
+          .eq(
+            'room_code',
+            roomCode
+          )
+
+
+      if (error) {
+
+        console.error(
+          '방 종료 오류:',
+          error
+        )
+
+        alert(
+          '방 종료 중 오류가 발생했습니다.'
+        )
+
+        return
+      }
+
+
+      roomClosedHandledRef.current = true
+
+      setAuctionStarted(false)
+      auctionStartedRef.current = false
+
+      setPage('lobby')
+    }
 
 
   // =========================
@@ -110,20 +587,26 @@ function RoomPage({
     participantId
   ) => {
 
-    if (auctionStarted) {
+    if (auctionStartedRef.current) {
       return
     }
 
+
+    const currentTeams =
+      teamsRef.current
 
     const numericParticipantId =
       Number(participantId)
 
 
+    let nextTeams
+
+
     // 팀장 해제
     if (!participantId) {
 
-      setTeams((prevTeams) =>
-        prevTeams.map((team) =>
+      nextTeams =
+        currentTeams.map((team) =>
           team.id === teamId
             ? {
                 ...team,
@@ -131,53 +614,63 @@ function RoomPage({
               }
             : team
         )
-      )
 
-      return
+    } else {
+
+      const participant =
+        roomParticipants.find(
+          (user) =>
+            user.id ===
+            numericParticipantId
+        )
+
+
+      if (!participant) {
+        return
+      }
+
+
+      const alreadyLeader =
+        currentTeams.find(
+          (team) =>
+            team.id !== teamId &&
+            team.leader?.id ===
+              participant.id
+        )
+
+
+      if (alreadyLeader) {
+
+        alert(
+          `${participant.nickname}님은 이미 ${alreadyLeader.name} 팀장입니다.`
+        )
+
+        return
+      }
+
+
+      nextTeams =
+        currentTeams.map((team) =>
+          team.id === teamId
+            ? {
+                ...team,
+                leader: participant
+              }
+            : team
+        )
     }
 
 
-    const participant =
-      roomParticipants.find(
-        (user) =>
-          user.id === numericParticipantId
-      )
+    teamsRef.current =
+      nextTeams
 
-
-    if (!participant) {
-      return
-    }
-
-
-    // 다른 팀에서 이미 팀장인지 확인
-    const alreadyLeader =
-      teams.find(
-        (team) =>
-          team.id !== teamId &&
-          team.leader?.id === participant.id
-      )
-
-
-    if (alreadyLeader) {
-
-      alert(
-        `${participant.nickname}님은 이미 ${alreadyLeader.name} 팀장입니다.`
-      )
-
-      return
-    }
-
-
-    setTeams((prevTeams) =>
-      prevTeams.map((team) =>
-        team.id === teamId
-          ? {
-              ...team,
-              leader: participant
-            }
-          : team
-      )
+    setTeams(
+      nextTeams
     )
+
+    saveRoomState({
+      teams: nextTeams
+    })
   }
 
 
@@ -190,7 +683,7 @@ function RoomPage({
     value
   ) => {
 
-    if (auctionStarted) {
+    if (auctionStartedRef.current) {
       return
     }
 
@@ -202,8 +695,8 @@ function RoomPage({
       )
 
 
-    setTeams((prevTeams) =>
-      prevTeams.map((team) =>
+    const nextTeams =
+      teamsRef.current.map((team) =>
         team.id === teamId
           ? {
               ...team,
@@ -211,7 +704,18 @@ function RoomPage({
             }
           : team
       )
+
+
+    teamsRef.current =
+      nextTeams
+
+    setTeams(
+      nextTeams
     )
+
+    saveRoomState({
+      teams: nextTeams
+    })
   }
 
 
@@ -223,8 +727,12 @@ function RoomPage({
 
   const handleSaveAdminSettings = () => {
 
+    const currentTeams =
+      teamsRef.current
+
+
     const leaderIds =
-      teams
+      currentTeams
         .filter((team) => team.leader)
         .map((team) => team.leader.id)
 
@@ -238,20 +746,75 @@ function RoomPage({
       )
 
 
-    setAuctionPlayers(players)
-
-    setCurrentBid(0)
-    setHighestBidTeam(null)
-
-    setTimeLeft(15)
-
-    setAdminSettingsOpen(false)
+    const activeTeamCount =
+      currentTeams.filter(
+        (team) => team.leader !== null
+      ).length
 
 
-    setAuctionLogs((prevLogs) => [
-      ...prevLogs,
-      `관리자 설정 완료 - ${activeTeams.length}개 팀 / 경매 선수 ${players.length}명`
-    ])
+    const nextLogs = [
+      ...auctionLogsRef.current,
+      `관리자 설정 완료 - ${activeTeamCount}개 팀 / 경매 선수 ${players.length}명`
+    ]
+
+
+    auctionPlayersRef.current =
+      players
+
+    currentBidRef.current = 0
+    highestBidTeamRef.current = null
+    timeLeftRef.current = 15
+    auctionLogsRef.current =
+      nextLogs
+
+
+    setAuctionPlayers(
+      players
+    )
+
+    setCurrentBid(
+      0
+    )
+
+    setHighestBidTeam(
+      null
+    )
+
+    setTimeLeft(
+      15
+    )
+
+    setAdminSettingsOpen(
+      false
+    )
+
+    setAuctionLogs(
+      nextLogs
+    )
+
+
+    saveRoomState({
+      teams:
+        currentTeams,
+
+      auctionPlayers:
+        players,
+
+      auctionStarted:
+        false,
+
+      timeLeft:
+        15,
+
+      currentBid:
+        0,
+
+      highestBidTeam:
+        null,
+
+      auctionLogs:
+        nextLogs
+    })
   }
 
 
@@ -264,7 +827,7 @@ function RoomPage({
     direction
   ) => {
 
-    if (auctionStarted) {
+    if (auctionStartedRef.current) {
       return
     }
 
@@ -275,31 +838,38 @@ function RoomPage({
 
     if (
       targetIndex < 0 ||
-      targetIndex >= auctionPlayers.length
+      targetIndex >=
+        auctionPlayersRef.current.length
     ) {
       return
     }
 
 
+    const newPlayers = [
+      ...auctionPlayersRef.current
+    ]
+
+
+    ;[
+      newPlayers[index],
+      newPlayers[targetIndex]
+    ] = [
+      newPlayers[targetIndex],
+      newPlayers[index]
+    ]
+
+
+    auctionPlayersRef.current =
+      newPlayers
+
     setAuctionPlayers(
-      (prevPlayers) => {
-
-        const newPlayers =
-          [...prevPlayers]
-
-
-        ;[
-          newPlayers[index],
-          newPlayers[targetIndex]
-        ] = [
-          newPlayers[targetIndex],
-          newPlayers[index]
-        ]
-
-
-        return newPlayers
-      }
+      newPlayers
     )
+
+    saveRoomState({
+      auctionPlayers:
+        newPlayers
+    })
   }
 
 
@@ -309,45 +879,51 @@ function RoomPage({
 
   const shufflePlayers = () => {
 
-    if (auctionStarted) {
+    if (auctionStartedRef.current) {
       return
     }
 
 
+    const shuffled = [
+      ...auctionPlayersRef.current
+    ]
+
+
+    for (
+      let i =
+        shuffled.length - 1;
+      i > 0;
+      i--
+    ) {
+
+      const randomIndex =
+        Math.floor(
+          Math.random() *
+          (i + 1)
+        )
+
+
+      ;[
+        shuffled[i],
+        shuffled[randomIndex]
+      ] = [
+        shuffled[randomIndex],
+        shuffled[i]
+      ]
+    }
+
+
+    auctionPlayersRef.current =
+      shuffled
+
     setAuctionPlayers(
-      (prevPlayers) => {
-
-        const shuffled =
-          [...prevPlayers]
-
-
-        for (
-          let i =
-            shuffled.length - 1;
-          i > 0;
-          i--
-        ) {
-
-          const randomIndex =
-            Math.floor(
-              Math.random() *
-              (i + 1)
-            )
-
-
-          ;[
-            shuffled[i],
-            shuffled[randomIndex]
-          ] = [
-            shuffled[randomIndex],
-            shuffled[i]
-          ]
-        }
-
-
-        return shuffled
-      }
+      shuffled
     )
+
+    saveRoomState({
+      auctionPlayers:
+        shuffled
+    })
   }
 
 
@@ -362,7 +938,22 @@ function RoomPage({
     }
 
 
-    if (activeTeams.length < 2) {
+    const currentTeams =
+      teamsRef.current
+
+    const currentPlayers =
+      auctionPlayersRef.current
+
+    const currentActiveTeams =
+      currentTeams.filter(
+        (team) =>
+          team.leader !== null
+      )
+
+
+    if (
+      currentActiveTeams.length < 2
+    ) {
 
       alert(
         '경매를 시작하려면 최소 2개의 팀에 팀장을 지정해주세요.'
@@ -372,7 +963,9 @@ function RoomPage({
     }
 
 
-    if (auctionPlayers.length === 0) {
+    if (
+      currentPlayers.length === 0
+    ) {
 
       alert(
         '경매 참가자가 없습니다. 관리자 설정을 먼저 완료해주세요.'
@@ -382,25 +975,68 @@ function RoomPage({
     }
 
 
-    setAdminSettingsOpen(false)
+    const nextLogs = [
+      ...auctionLogsRef.current,
+      `${currentPlayers[0].nickname} 경매 시작`
+    ]
 
-    setCurrentBid(0)
-    setHighestBidTeam(null)
+
+    setAdminSettingsOpen(
+      false
+    )
+
 
     currentBidRef.current = 0
     highestBidTeamRef.current = null
+    timeLeftRef.current = 15
+    auctionStartedRef.current = true
+    auctionLogsRef.current =
+      nextLogs
 
-    setTimeLeft(15)
 
-    setAuctionStarted(true)
+    setCurrentBid(
+      0
+    )
 
+    setHighestBidTeam(
+      null
+    )
+
+    setTimeLeft(
+      15
+    )
+
+    setAuctionStarted(
+      true
+    )
 
     setAuctionLogs(
-      (prevLogs) => [
-        ...prevLogs,
-        `${auctionPlayers[0].nickname} 경매 시작`
-      ]
+      nextLogs
     )
+
+
+    saveRoomState({
+      teams:
+        currentTeams,
+
+      auctionPlayers:
+        currentPlayers,
+
+      auctionStarted:
+        true,
+
+      timeLeft:
+        15,
+
+      currentBid:
+        0,
+
+      highestBidTeam:
+        null,
+
+      auctionLogs:
+        nextLogs
+    })
   }
 
 
@@ -408,61 +1044,230 @@ function RoomPage({
   // 입찰
   // =========================
 
-  const handleBid = (amount) => {
+  const handleBid =
+    async (amount) => {
 
-    if (!auctionStarted) {
-      return
-    }
-
-
-    if (!myLeaderTeam) {
-
-      alert(
-        '팀장만 입찰할 수 있습니다.'
-      )
-
-      return
-    }
+      if (!auctionStartedRef.current) {
+        return
+      }
 
 
-    const newBid =
-      currentBidRef.current + amount
+      if (!myLeaderTeam) {
+
+        alert(
+          '팀장만 입찰할 수 있습니다.'
+        )
+
+        return
+      }
 
 
-    if (
-      newBid >
-      myLeaderTeam.points
-    ) {
-
-      alert(
-        `${myLeaderTeam.name}의 남은 포인트가 부족합니다.`
-      )
-
-      return
-    }
-
-
-    currentBidRef.current =
-      newBid
-
-    highestBidTeamRef.current =
-      myLeaderTeam.id
+      // 다른 브라우저에서 방금 올라온
+      // 입찰가까지 한 번 더 확인
+      const {
+        data: latestState,
+        error
+      } =
+        await supabase
+          .from('room_states')
+          .select(
+            'teams, auction_players, auction_started, time_left, current_bid, highest_bid_team, auction_logs'
+          )
+          .eq(
+            'room_code',
+            roomCode
+          )
+          .maybeSingle()
 
 
-    setCurrentBid(newBid)
+      if (error) {
 
-    setHighestBidTeam(
-      myLeaderTeam.id
-    )
+        console.error(
+          '최신 입찰 상태 조회 오류:',
+          error
+        )
+
+        return
+      }
 
 
-    setAuctionLogs(
-      (prevLogs) => [
-        ...prevLogs,
-        `${myLeaderTeam.name} +${amount}P 입찰 → ${newBid}P`
+      if (
+        !latestState ||
+        !latestState.auction_started
+      ) {
+        return
+      }
+
+
+      const latestTeams =
+        Array.isArray(
+          latestState.teams
+        )
+          ? latestState.teams
+          : teamsRef.current
+
+
+      const latestMyTeam =
+        latestTeams.find(
+          (team) => {
+
+            if (!team.leader) {
+              return false
+            }
+
+
+            if (
+              team.leader.userId &&
+              registeredUser?.userId
+            ) {
+
+              return (
+                team.leader.userId ===
+                registeredUser.userId
+              )
+            }
+
+
+            return (
+              team.leader.nickname ===
+              registeredUser?.nickname
+            )
+          }
+        )
+
+
+      if (!latestMyTeam) {
+
+        alert(
+          '현재 팀장 정보가 변경되었습니다.'
+        )
+
+        return
+      }
+
+
+      const latestBid =
+        Number(
+          latestState.current_bid ?? 0
+        )
+
+      const newBid =
+        latestBid + amount
+
+
+      if (
+        newBid >
+        latestMyTeam.points
+      ) {
+
+        alert(
+          `${latestMyTeam.name}의 남은 포인트가 부족합니다.`
+        )
+
+        return
+      }
+
+
+      const latestLogs =
+        Array.isArray(
+          latestState.auction_logs
+        )
+          ? latestState.auction_logs
+          : []
+
+
+      const nextLogs = [
+        ...latestLogs,
+        `${latestMyTeam.name} +${amount}P 입찰 → ${newBid}P`
       ]
-    )
-  }
+
+
+      currentBidRef.current =
+        newBid
+
+      highestBidTeamRef.current =
+        latestMyTeam.id
+
+      auctionLogsRef.current =
+        nextLogs
+
+      teamsRef.current =
+        latestTeams
+
+
+      // =========================
+      // 입찰할 때마다 7초 추가
+      // =========================
+
+      const currentRemaining =
+        Math.max(
+          0,
+          Number(
+            timeLeftRef.current ??
+            latestState.time_left ??
+            0
+          )
+        )
+
+      const extendedTime =
+        currentRemaining + 3
+
+      timeLeftRef.current =
+        extendedTime
+
+      auctionEndTimeRef.current =
+        performance.now() +
+        extendedTime * 1000
+
+
+      setTeams(
+        latestTeams
+      )
+
+      setTimeLeft(
+        extendedTime
+      )
+
+      setCurrentBid(
+        newBid
+      )
+
+      setHighestBidTeam(
+        latestMyTeam.id
+      )
+
+      setAuctionLogs(
+        nextLogs
+      )
+
+
+      await saveRoomState({
+        teams:
+          latestTeams,
+
+        auctionPlayers:
+          Array.isArray(
+            latestState.auction_players
+          )
+            ? latestState.auction_players
+            : auctionPlayersRef.current,
+
+        auctionStarted:
+          true,
+
+        timeLeft:
+          extendedTime,
+
+        currentBid:
+          newBid,
+
+        highestBidTeam:
+          latestMyTeam.id,
+
+        auctionLogs:
+          nextLogs
+      })
+    }
 
 
   // =========================
@@ -484,6 +1289,28 @@ function RoomPage({
     const finalTeamId =
       highestBidTeamRef.current
 
+    const currentTeams =
+      teamsRef.current
+
+    const currentPlayers =
+      auctionPlayersRef.current
+
+    let nextTeams =
+      currentTeams
+
+    let nextPlayers =
+      currentPlayers
+
+    let nextLogs = [
+      ...auctionLogsRef.current
+    ]
+
+    let nextAuctionStarted =
+      true
+
+    let nextTimeLeft =
+      15
+
 
     // =========================
     // 유찰
@@ -491,30 +1318,41 @@ function RoomPage({
 
     if (finalTeamId === null) {
 
-      setAuctionLogs(
-        (prevLogs) => [
-          ...prevLogs,
-          `${player.nickname} 유찰 - 맨 뒤로 이동`
+      if (
+        currentPlayers.length <= 1
+      ) {
+
+        nextPlayers = []
+
+        nextAuctionStarted =
+          false
+
+        nextTimeLeft =
+          0
+
+        nextLogs.push(
+          `${player.nickname} 유찰 - 남은 경매 선수가 없어 경매 종료`
+        )
+
+        nextLogs.push(
+          '모든 선수의 경매가 종료되었습니다.'
+        )
+
+      } else {
+
+        nextPlayers = [
+          ...currentPlayers.slice(1),
+          currentPlayers[0]
         ]
-      )
 
+        nextLogs.push(
+          `${player.nickname} 유찰 - 맨 뒤로 이동`
+        )
 
-      setAuctionPlayers(
-        (prevPlayers) => {
-
-          if (
-            prevPlayers.length <= 1
-          ) {
-            return prevPlayers
-          }
-
-
-          return [
-            ...prevPlayers.slice(1),
-            prevPlayers[0]
-          ]
-        }
-      )
+        nextLogs.push(
+          `${nextPlayers[0].nickname} 경매 시작`
+        )
+      }
 
     } else {
 
@@ -523,7 +1361,7 @@ function RoomPage({
       // =========================
 
       const winningTeam =
-        teams.find(
+        currentTeams.find(
           (team) =>
             team.id === finalTeamId
         )
@@ -531,71 +1369,160 @@ function RoomPage({
 
       if (winningTeam) {
 
-        setTeams(
-          (prevTeams) =>
-            prevTeams.map(
-              (team) => {
+        nextTeams =
+          currentTeams.map(
+            (team) => {
 
-                if (
-                  team.id !==
-                  finalTeamId
-                ) {
-                  return team
-                }
-
-
-                return {
-                  ...team,
-
-                  points:
-                    Math.max(
-                      0,
-                      team.points -
-                      finalBid
-                    ),
-
-                  players: [
-                    ...team.players,
-                    player
-                  ]
-                }
+              if (
+                team.id !==
+                finalTeamId
+              ) {
+                return team
               }
-            )
-        )
 
 
-        setAuctionLogs(
-          (prevLogs) => [
-            ...prevLogs,
-            `${player.nickname} → ${winningTeam.name} ${finalBid}P 낙찰`
-          ]
+              return {
+                ...team,
+
+                points:
+                  Math.max(
+                    0,
+                    team.points -
+                    finalBid
+                  ),
+
+                players: [
+                  ...team.players,
+                  player
+                ]
+              }
+            }
+          )
+
+
+        nextLogs.push(
+          `${player.nickname} → ${winningTeam.name} ${finalBid}P 낙찰`
         )
       }
 
 
-      // 낙찰 선수 제거
+      nextPlayers =
+        currentPlayers.slice(1)
 
-      setAuctionPlayers(
-        (prevPlayers) =>
-          prevPlayers.slice(1)
-      )
+
+      if (
+        nextPlayers.length === 0
+      ) {
+
+        nextAuctionStarted =
+          false
+
+        nextTimeLeft =
+          0
+
+        nextLogs.push(
+          '모든 선수의 경매가 종료되었습니다.'
+        )
+
+      } else {
+
+        nextLogs.push(
+          `${nextPlayers[0].nickname} 경매 시작`
+        )
+      }
     }
 
 
-    // 다음 선수용 초기화
+    teamsRef.current =
+      nextTeams
+
+    auctionPlayersRef.current =
+      nextPlayers
+
+    auctionStartedRef.current =
+      nextAuctionStarted
+
+    timeLeftRef.current =
+      nextTimeLeft
+
+    if (nextAuctionStarted) {
+
+      auctionEndTimeRef.current =
+        performance.now() +
+        nextTimeLeft * 1000
+
+    } else {
+
+      auctionEndTimeRef.current =
+        null
+    }
+
+    auctionLogsRef.current =
+      nextLogs
 
     currentBidRef.current = 0
     highestBidTeamRef.current = null
 
-    setCurrentBid(0)
-    setHighestBidTeam(null)
 
-    setTimeLeft(15)
+    setTeams(
+      nextTeams
+    )
+
+    setAuctionPlayers(
+      nextPlayers
+    )
+
+    setAuctionStarted(
+      nextAuctionStarted
+    )
+
+    setCurrentBid(
+      0
+    )
+
+    setHighestBidTeam(
+      null
+    )
+
+    setTimeLeft(
+      nextTimeLeft
+    )
+
+    setAuctionLogs(
+      nextLogs
+    )
+
+
+    saveRoomState({
+      teams:
+        nextTeams,
+
+      auctionPlayers:
+        nextPlayers,
+
+      auctionStarted:
+        nextAuctionStarted,
+
+      timeLeft:
+        nextTimeLeft,
+
+      currentBid:
+        0,
+
+      highestBidTeam:
+        null,
+
+      auctionLogs:
+        nextLogs
+    })
   }
 
 
   // =========================
   // 15.00초 타이머
+  // =========================
+  // 각 화면은 타이머를 표시하지만
+  // 실제 낙찰 처리는 방장만 수행
   // =========================
 
   useEffect(() => {
@@ -607,9 +1534,13 @@ function RoomPage({
 
     if (!currentPlayer) {
 
-      setAuctionStarted(false)
+      setAuctionStarted(
+        false
+      )
 
-      setTimeLeft(0)
+      setTimeLeft(
+        0
+      )
 
       return
     }
@@ -619,8 +1550,19 @@ function RoomPage({
       currentPlayer
 
 
-    const endTime =
-      performance.now() + 15000
+    if (
+      auctionEndTimeRef.current === null
+    ) {
+
+      auctionEndTimeRef.current =
+        performance.now() +
+        Math.max(
+          0,
+          Number(
+            timeLeftRef.current || 15
+          )
+        ) * 1000
+    }
 
 
     const timer =
@@ -630,92 +1572,82 @@ function RoomPage({
           Math.max(
             0,
             (
-              endTime -
+              auctionEndTimeRef.current -
               performance.now()
             ) / 1000
           )
 
 
-        setTimeLeft(remaining)
+        timeLeftRef.current =
+          remaining
+
+        setTimeLeft(
+          remaining
+        )
 
 
         if (remaining <= 0) {
 
-          clearInterval(timer)
-
-          finishAuction(
-            playerAtStart
+          clearInterval(
+            timer
           )
+
+
+          if (isAdmin) {
+
+            finishAuction(
+              playerAtStart
+            )
+
+          } else {
+
+            setTimeLeft(
+              0
+            )
+          }
         }
 
       }, 10)
 
 
     return () => {
-      clearInterval(timer)
+
+      clearInterval(
+        timer
+      )
+    }
+
+  }, [
+    auctionStarted,
+    currentPlayer?.id,
+    isAdmin
+  ])
+
+
+  // =========================
+  // 다음 선수 상태 확인
+  // =========================
+
+  useEffect(() => {
+
+    if (
+      auctionStarted &&
+      !currentPlayer
+    ) {
+
+      setAuctionStarted(
+        false
+      )
+
+      setTimeLeft(
+        0
+      )
     }
 
   }, [
     auctionStarted,
     currentPlayer?.id
   ])
-
-
-  // =========================
-  // 다음 선수 시작 로그
-  // =========================
-
-  useEffect(() => {
-
-    if (!auctionStarted) {
-      return
-    }
-
-
-    if (!currentPlayer) {
-
-      setAuctionStarted(false)
-
-      setTimeLeft(0)
-
-      setAuctionLogs(
-        (prevLogs) => [
-          ...prevLogs,
-          '모든 선수의 경매가 종료되었습니다.'
-        ]
-      )
-
-      return
-    }
-
-
-    setTimeLeft(15)
-
-
-    setAuctionLogs(
-      (prevLogs) => {
-
-        const message =
-          `${currentPlayer.nickname} 경매 시작`
-
-
-        if (
-          prevLogs[
-            prevLogs.length - 1
-          ] === message
-        ) {
-          return prevLogs
-        }
-
-
-        return [
-          ...prevLogs,
-          message
-        ]
-      }
-    )
-
-  }, [currentPlayer?.id])
 
 
   return (
@@ -773,9 +1705,7 @@ function RoomPage({
 
           <button
             className="room-exit"
-            onClick={() =>
-              setPage('lobby')
-            }
+            onClick={handleExitRoom}
           >
             로비로 나가기
           </button>
