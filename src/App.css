@@ -1,0 +1,275 @@
+/* =========================
+   전체 화면
+   ========================= */
+
+.login-page {
+  width: 100%;
+  height: 100vh;
+
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.25)
+    ),
+    url('/valorant-bg.png');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* =========================
+   로그인 박스
+   ========================= */
+
+.login-box {
+  width: 420px;
+  padding: 45px;
+
+  background: rgba(10, 10, 15, 0.9);
+
+  border: 1px solid #ff4655;
+  border-radius: 8px;
+
+  text-align: center;
+
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+
+/* =========================
+   로고 이미지
+   ========================= */
+
+.valorant-logo {
+  display: block;
+
+  width: 75px;
+  height: auto;
+
+  margin: 0 auto 12px;
+
+  object-fit: contain;
+}
+
+/* =========================
+   제목
+   ========================= */
+
+.login-box h1 {
+  color: #ff4655;
+
+  font-size: 30px;
+
+  margin: 0;
+}
+
+
+/* VALORANT */
+
+.game-title {
+  color: #ff4655;
+
+  letter-spacing: 8px;
+
+  margin-top: 10px;
+  margin-bottom: 35px;
+}
+
+
+/* =========================
+   입력창
+   ========================= */
+
+.login-form input {
+  width: 100%;
+
+  padding: 15px;
+
+  margin-bottom: 15px;
+
+  box-sizing: border-box;
+
+  background: rgba(15, 15, 20, 0.9);
+
+  border: 1px solid #555;
+
+  color: white;
+
+  font-size: 16px;
+
+  border-radius: 5px;
+
+  outline: none;
+
+  transition: 0.2s;
+}
+
+
+/* 입력창 클릭 */
+
+.login-form input:focus {
+  border-color: #ff4655;
+
+  box-shadow:
+    0 0 8px rgba(255, 70, 85, 0.5);
+}
+
+
+/* =========================
+   로그인 버튼
+   ========================= */
+
+.login-button {
+  width: 100%;
+
+  padding: 15px;
+
+  background: #ff4655;
+
+  color: black;
+
+  border: none;
+
+  border-radius: 5px;
+
+  font-size: 17px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+/* 마우스 올렸을 때 */
+
+.login-button:hover {
+  background: white;
+
+  transform: translateY(-2px);
+}
+
+
+/* =========================
+   회원가입
+   ========================= */
+
+.signup-button {
+  display: block;
+
+  margin-left: auto;
+  margin-top: 18px;
+
+  background: transparent;
+
+  border: none;
+
+  color: #ff4655;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.signup-button:hover {
+  color: white;
+
+  transform: translateX(4px);
+}
+
+/* =========================
+   제작자 정보 입력 /  버전 정보
+   ========================= */
+.footer-info {
+  position: fixed;
+  left: 20px;
+  bottom: 15px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  color: rgba(255, 255, 255, 0.65);
+
+  font-size: 12px;
+  letter-spacing: 1px;
+
+  z-index: 10;
+}
+
+/* =========================
+   로그인 폼 선택창
+   ========================= */
+.login-form select {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 15px;
+
+  background: rgba(15, 15, 20, 0.9);
+  border: 1px solid #555;
+  border-radius: 5px;
+
+  color: white;
+  font-size: 16px;
+
+  outline: none;
+}
+
+.create-room {
+  grid-column: 1;
+  grid-row: 1;
+
+  width: 100%;
+  min-height: 220px;
+
+  background: rgba(10, 10, 15, 0.9);
+  border: 1px solid #ff4655;
+  border-radius: 8px;
+
+  color: white;
+  text-align: left;
+
+  padding: 30px;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.create-room:hover {
+  background: rgba(255, 70, 85, 0.12);
+  transform: translateY(-3px);
+}
+
+.create-room h2 {
+  margin: 0;
+  color: #ff4655;
+  font-size: 32px;
+}
+
+.create-room p {
+  margin-top: 10px;
+  color: #aaa;
+  font-size: 15px;
+}
+
+.lobby {
+  width: 90%;
+  height: 85vh;
+
+  display: grid;
+
+  grid-template-columns: 2.5fr 1fr;
+  grid-template-rows: 1fr 1fr;
+
+  gap: 20px;
+}

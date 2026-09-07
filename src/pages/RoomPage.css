@@ -1,0 +1,2183 @@
+.room-page {
+  width: 100%;
+  height: 100vh;
+
+  background:
+    linear-gradient(
+      rgba(5, 5, 10, 0.56),
+      rgba(5, 5, 10, 0.88)
+    ),
+    url('/lobby-bg.png');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  padding: 25px;
+
+  box-sizing: border-box;
+
+  color: white;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   상단 헤더
+========================= */
+
+.room-header {
+  width: 100%;
+  height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 24px;
+
+  background: rgba(8, 8, 20, 0.88);
+
+  border: 1px solid rgba(210, 120, 255, 0.6);
+  border-radius: 10px;
+
+  box-sizing: border-box;
+
+  backdrop-filter: blur(10px);
+}
+
+
+.room-title h1 {
+  margin: 0;
+
+  color: #ff4f7b;
+
+  font-size: 24px;
+}
+
+
+.room-title p {
+  margin: 3px 0 0 0;
+
+  color: #9c91ad;
+
+  font-size: 10px;
+
+  letter-spacing: 3px;
+}
+
+
+/* =========================
+   방 코드
+========================= */
+
+.room-code {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+}
+
+
+.room-code span {
+  color: #9c91ad;
+
+  font-size: 11px;
+
+  letter-spacing: 2px;
+}
+
+
+.room-code strong {
+  color: #e879ff;
+
+  font-size: 22px;
+
+  letter-spacing: 4px;
+}
+
+
+/* =========================
+   나가기 버튼
+========================= */
+
+.room-exit {
+  padding: 10px 17px;
+
+  background: rgba(255, 79, 123, 0.06);
+
+  border: 1px solid rgba(255, 79, 123, 0.7);
+
+  border-radius: 6px;
+
+  color: #ff6b8f;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.room-exit:hover {
+  background: rgba(255, 79, 123, 0.17);
+
+  border-color: #ff4f7b;
+
+  transform: translateY(-2px);
+}
+
+
+/* =========================
+   전체 메인 레이아웃
+========================= */
+
+.room-content {
+  width: 100%;
+
+  height: calc(100vh - 128px);
+
+  margin-top: 18px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(420px, 1.45fr)
+    minmax(360px, 1fr)
+    minmax(300px, 0.85fr);
+
+  gap: 18px;
+}
+
+
+/* =========================
+   공통 패널
+========================= */
+
+.team-panel,
+.auction-center,
+.auction-right {
+  background: rgba(8, 8, 20, 0.82);
+
+  border: 1px solid rgba(210, 120, 255, 0.55);
+
+  border-radius: 10px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  backdrop-filter: blur(8px);
+}
+
+
+/* =========================
+   팀 현황
+========================= */
+
+.team-panel {
+  padding: 18px;
+
+  overflow-y: auto;
+}
+
+
+.panel-title {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 14px;
+}
+
+
+.panel-title h2 {
+  margin: 0;
+
+  color: #ff4f7b;
+
+  font-size: 23px;
+}
+
+
+.panel-title span {
+  padding: 5px 9px;
+
+  background: rgba(232, 121, 255, 0.1);
+
+  border: 1px solid rgba(232, 121, 255, 0.35);
+
+  border-radius: 5px;
+
+  color: #e879ff;
+
+  font-size: 10px;
+
+  letter-spacing: 1px;
+}
+
+
+/* =========================
+   팀 박스
+========================= */
+
+.team-box {
+  margin-bottom: 14px;
+
+  padding: 13px;
+
+  background: rgba(12, 13, 27, 0.92);
+
+  border: 1px solid rgba(232, 121, 255, 0.38);
+
+  border-radius: 8px;
+
+  box-sizing: border-box;
+}
+
+
+.team-box:last-child {
+  margin-bottom: 0;
+}
+
+
+/* =========================
+   팀 헤더
+========================= */
+
+.team-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 10px;
+
+  border-bottom:
+    1px solid rgba(232, 121, 255, 0.16);
+}
+
+
+.team-name {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+}
+
+
+.team-number {
+  width: 26px;
+  height: 26px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #ff4f7b;
+
+  border-radius: 4px;
+
+  color: white;
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+
+.team-name h3 {
+  margin: 0;
+
+  color: white;
+
+  font-size: 16px;
+}
+
+
+.team-points {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+.team-points span {
+  color: #8f879e;
+
+  font-size: 10px;
+}
+
+
+.team-points strong {
+  color: #e879ff;
+
+  font-size: 18px;
+}
+
+
+/* =========================
+   팀원 슬롯
+========================= */
+
+.team-slots {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 7px;
+
+  margin-top: 11px;
+}
+
+
+/* =========================
+   팀원 한 칸
+========================= */
+
+.member-slot {
+  min-width: 0;
+
+  height: 92px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: rgba(28, 27, 39, 0.95);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 6px;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+
+.member-slot:hover {
+  border-color: rgba(232, 121, 255, 0.6);
+
+  transform: translateY(-2px);
+}
+
+
+/* =========================
+   팀원 이미지
+========================= */
+
+.member-image {
+  width: 100%;
+
+  height: 57px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(232, 121, 255, 0.12),
+      rgba(255, 79, 123, 0.08)
+    );
+
+  color: #e879ff;
+
+  font-size: 24px;
+
+  font-weight: 800;
+}
+
+
+.member-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* =========================
+   팀원 이름
+========================= */
+
+.member-info {
+  height: 35px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  padding: 3px 6px;
+
+  box-sizing: border-box;
+
+  text-align: left;
+}
+
+
+.member-info strong {
+  width: 100%;
+
+  overflow: hidden;
+
+  color: white;
+
+  font-size: 11px;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   팀장
+========================= */
+
+.leader-slot {
+  border-color: rgba(255, 79, 123, 0.7);
+}
+
+
+.leader-badge {
+  color: #ff4f7b;
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+}
+
+
+/* =========================
+   빈 슬롯
+========================= */
+
+.empty-slot {
+  opacity: 0.48;
+
+  border-style: dashed;
+}
+
+
+.empty-image {
+  color: #716979;
+
+  font-size: 17px;
+}
+
+
+.empty-slot .member-info {
+  align-items: center;
+
+  color: #716979;
+
+  font-size: 8px;
+
+  letter-spacing: 1px;
+}
+
+
+/* =========================
+   가운데 - 현재 경매
+========================= */
+
+.auction-center {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+
+  padding: 18px;
+}
+
+
+.auction-title {
+  text-align: left;
+}
+
+
+.auction-title span {
+  color: #e879ff;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+
+.auction-title h2 {
+  margin: 3px 0 0 0;
+
+  color: #ff4f7b;
+
+  font-size: 22px;
+}
+
+
+/* =========================
+   현재 경매 선수
+========================= */
+
+.current-player-card {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 13px;
+
+  background: rgba(15, 14, 29, 0.92);
+
+  border: 1px solid rgba(232, 121, 255, 0.3);
+
+  border-radius: 8px;
+}
+
+
+.current-player-image {
+  width: 85px;
+  height: 85px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(232, 121, 255, 0.15),
+      rgba(255, 79, 123, 0.08)
+    );
+
+  border: 1px solid rgba(232, 121, 255, 0.45);
+
+  border-radius: 7px;
+
+  color: #e879ff;
+
+  font-size: 30px;
+
+  font-weight: 800;
+}
+
+
+.current-player-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.current-player-info {
+  min-width: 0;
+
+  text-align: left;
+}
+
+
+.player-status {
+  color: #9c91ad;
+
+  font-size: 10px;
+
+  letter-spacing: 1px;
+}
+
+
+.current-player-info h2 {
+  margin: 5px 0;
+
+  color: white;
+
+  font-size: 20px;
+}
+
+
+.current-player-info p {
+  margin: 0;
+
+  color: #81798c;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================
+   입찰 현황
+========================= */
+
+.bid-status {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+}
+
+
+.bid-info-box {
+  min-height: 72px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  padding: 12px;
+
+  background: rgba(15, 14, 29, 0.92);
+
+  border: 1px solid rgba(232, 121, 255, 0.25);
+
+  border-radius: 7px;
+
+  text-align: left;
+}
+
+
+.bid-info-box span {
+  margin-bottom: 5px;
+
+  color: #8f879e;
+
+  font-size: 10px;
+}
+
+
+.bid-info-box strong {
+  color: white;
+
+  font-size: 18px;
+}
+
+
+.bid-info-box .bid-price {
+  color: #ff4f7b;
+
+  font-size: 28px;
+}
+
+
+.bid-info-box small {
+  margin-left: 4px;
+
+  color: #9c91ad;
+}
+
+
+/* =========================
+   타이머
+========================= */
+
+.auction-timer {
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 15px;
+
+  background: rgba(15, 14, 29, 0.92);
+
+  border: 1px solid rgba(232, 121, 255, 0.25);
+
+  border-radius: 7px;
+}
+
+
+.auction-timer span {
+  color: #9c91ad;
+
+  font-size: 11px;
+}
+
+
+.auction-timer strong {
+  color: #e879ff;
+
+  font-size: 22px;
+
+  letter-spacing: 2px;
+}
+
+
+/* =========================
+   경매 상태
+========================= */
+
+.auction-state {
+  padding: 12px;
+
+  background: rgba(255, 79, 123, 0.12);
+
+  border: 1px solid rgba(255, 79, 123, 0.5);
+
+  border-radius: 7px;
+
+  color: #ff6b8f;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  text-align: center;
+}
+
+
+/* =========================
+   입찰 버튼
+========================= */
+
+.bid-buttons {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 8px;
+}
+
+
+.bid-buttons button {
+  height: 42px;
+
+  background: rgba(232, 121, 255, 0.08);
+
+  border: 1px solid rgba(232, 121, 255, 0.45);
+
+  border-radius: 6px;
+
+  color: #e879ff;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.bid-buttons button:hover {
+  background: rgba(232, 121, 255, 0.2);
+
+  border-color: #e879ff;
+
+  color: white;
+
+  transform: translateY(-2px);
+}
+
+
+/* =========================
+   경매 로그
+========================= */
+
+.auction-log {
+  flex: 1;
+
+  min-height: 120px;
+
+  background: rgba(10, 9, 20, 0.88);
+
+  border: 1px solid rgba(232, 121, 255, 0.22);
+
+  border-radius: 8px;
+
+  overflow: hidden;
+}
+
+
+.auction-log-title {
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 12px;
+
+  border-bottom:
+    1px solid rgba(232, 121, 255, 0.2);
+}
+
+
+.auction-log-title h3 {
+  margin: 0;
+
+  color: white;
+
+  font-size: 12px;
+}
+
+
+.auction-log-title span {
+  color: #ff4f7b;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+
+.auction-log-content {
+  padding: 12px;
+}
+
+
+.empty-log {
+  margin: 0;
+
+  color: #706979;
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   오른쪽 패널
+========================= */
+
+.auction-right {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+
+  padding: 16px;
+}
+
+
+/* =========================
+   선수 프로필
+========================= */
+
+.player-profile {
+  padding: 14px;
+
+  background: rgba(12, 11, 25, 0.88);
+
+  border: 1px solid rgba(232, 121, 255, 0.28);
+
+  border-radius: 8px;
+}
+
+
+.player-profile-title {
+  text-align: left;
+
+  padding-bottom: 10px;
+
+  border-bottom:
+    1px solid rgba(232, 121, 255, 0.18);
+}
+
+
+.player-profile-title span {
+  color: #e879ff;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+
+.player-profile-title h2 {
+  margin: 3px 0 0 0;
+
+  color: #ff4f7b;
+
+  font-size: 20px;
+}
+
+
+/* =========================
+   프로필 상단
+========================= */
+
+.player-profile-top {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  margin-top: 13px;
+}
+
+
+.player-profile-image {
+  width: 90px;
+  height: 90px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(232, 121, 255, 0.16),
+      rgba(255, 79, 123, 0.1)
+    );
+
+  border:
+    1px solid rgba(232, 121, 255, 0.5);
+
+  border-radius: 8px;
+
+  color: #e879ff;
+
+  font-size: 32px;
+
+  font-weight: 800;
+}
+
+
+.player-profile-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.player-profile-name {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  text-align: left;
+}
+
+
+.player-profile-name span {
+  color: #8f879e;
+
+  font-size: 10px;
+}
+
+
+.player-profile-name strong {
+  margin-top: 5px;
+
+  color: white;
+
+  font-size: 24px;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   티어 / 포지션
+========================= */
+
+.player-profile-info {
+  margin-top: 14px;
+
+  border-top:
+    1px solid rgba(232, 121, 255, 0.15);
+
+  border-bottom:
+    1px solid rgba(232, 121, 255, 0.15);
+}
+
+
+.profile-info-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  min-height: 36px;
+}
+
+
+.profile-info-row span {
+  color: #8f879e;
+
+  font-size: 11px;
+}
+
+
+.profile-info-row strong {
+  color: white;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   선수 한마디
+========================= */
+
+.player-message {
+  margin-top: 12px;
+
+  padding: 11px;
+
+  background: rgba(232, 121, 255, 0.06);
+
+  border-left: 2px solid #e879ff;
+
+  border-radius: 4px;
+
+  text-align: left;
+}
+
+
+.player-message span {
+  color: #e879ff;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+
+.player-message p {
+  margin: 6px 0 0 0;
+
+  color: #e7e2eb;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================
+   경매 순서
+========================= */
+
+.auction-order {
+  flex: 1;
+
+  min-height: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding: 13px;
+
+  background: rgba(12, 11, 25, 0.88);
+
+  border: 1px solid rgba(232, 121, 255, 0.28);
+
+  border-radius: 8px;
+}
+
+
+.auction-order-title {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding-bottom: 9px;
+
+  border-bottom:
+    1px solid rgba(232, 121, 255, 0.18);
+
+  text-align: left;
+}
+
+
+.auction-order-title div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+.auction-order-title span {
+  padding: 3px 5px;
+
+  background: #ff4f7b;
+
+  border-radius: 3px;
+
+  color: white;
+
+  font-size: 7px;
+
+  font-weight: 800;
+}
+
+
+.auction-order-title h3 {
+  margin: 0;
+
+  color: white;
+
+  font-size: 14px;
+}
+
+
+.auction-order-title > strong {
+  color: #e879ff;
+
+  font-size: 11px;
+}
+
+
+/* =========================
+   경매 순서 목록
+========================= */
+
+.auction-order-list {
+  flex: 1;
+
+  min-height: 0;
+
+  margin-top: 9px;
+
+  overflow-y: auto;
+}
+
+
+.auction-order-player {
+  min-height: 43px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 6px;
+
+  padding: 6px 8px;
+
+  background: rgba(25, 23, 38, 0.75);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.06);
+
+  border-radius: 6px;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+
+/* 현재 선수 */
+
+.auction-order-player.current {
+  background: rgba(255, 79, 123, 0.1);
+
+  border-color:
+    rgba(255, 79, 123, 0.7);
+
+  box-shadow:
+    0 0 10px rgba(255, 79, 123, 0.08);
+}
+
+
+/* 순서 번호 */
+
+.order-number {
+  width: 18px;
+
+  color: #81798c;
+
+  font-size: 10px;
+
+  font-weight: 800;
+}
+
+
+/* 작은 프로필 이미지 */
+
+.order-profile-image {
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+
+  background:
+    rgba(232, 121, 255, 0.1);
+
+  border:
+    1px solid rgba(232, 121, 255, 0.3);
+
+  border-radius: 5px;
+
+  color: #e879ff;
+
+  font-size: 11px;
+
+  font-weight: 800;
+}
+
+
+.order-profile-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.auction-order-player > strong {
+  min-width: 0;
+
+  flex: 1;
+
+  color: white;
+
+  font-size: 11px;
+
+  text-align: left;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* CURRENT 표시 */
+
+.current-badge {
+  padding: 3px 5px;
+
+  background: #ff4f7b;
+
+  border-radius: 3px;
+
+  color: white !important;
+
+  font-size: 6px !important;
+
+  font-weight: 800;
+
+  letter-spacing: 0.5px !important;
+}
+
+
+/* =========================
+   스크롤바
+========================= */
+
+.team-panel::-webkit-scrollbar,
+.auction-order-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+
+.team-panel::-webkit-scrollbar-thumb,
+.auction-order-list::-webkit-scrollbar-thumb {
+  background: rgba(232, 121, 255, 0.35);
+
+  border-radius: 10px;
+}
+
+
+
+/* =========================
+   헤더 버튼 묶음
+========================= */
+
+.room-header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* =========================
+   관리자 설정
+========================= */
+
+.admin-setting-button {
+  padding: 10px 15px;
+
+  background: rgba(232, 121, 255, 0.08);
+
+  border: 1px solid rgba(232, 121, 255, 0.55);
+  border-radius: 6px;
+
+  color: #e879ff;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.admin-setting-button:hover {
+  background: rgba(232, 121, 255, 0.18);
+
+  color: white;
+
+  transform: translateY(-2px);
+}
+
+
+/* =========================
+   경매 시작
+========================= */
+
+.start-auction-button {
+  width: 100%;
+  height: 44px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 79, 123, 0.25),
+      rgba(232, 121, 255, 0.18)
+    );
+
+  border: 1px solid rgba(255, 79, 123, 0.75);
+  border-radius: 6px;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.start-auction-button:hover {
+  border-color: #ff4f7b;
+
+  transform: translateY(-2px);
+}
+
+
+/* =========================
+   입찰 불가능
+========================= */
+
+.bid-buttons button:disabled {
+  opacity: 0.3;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =========================
+   관전자 안내
+========================= */
+
+.spectator-message {
+  margin: -4px 0 0 0;
+
+  color: #777080;
+
+  font-size: 10px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   5초 이하
+========================= */
+
+.auction-timer.timer-danger {
+  border-color: rgba(255, 79, 123, 0.75);
+
+  background: rgba(255, 79, 123, 0.1);
+}
+
+.auction-timer.timer-danger strong {
+  color: #ff4f7b;
+}
+
+
+/* =========================
+   로그
+========================= */
+
+.auction-log-content {
+  max-height: 150px;
+
+  overflow-y: auto;
+}
+
+.auction-log-item {
+  margin: 0 0 7px 0;
+
+  padding-bottom: 7px;
+
+  border-bottom:
+    1px solid rgba(232, 121, 255, 0.08);
+
+  color: #bdb5c5;
+
+  font-size: 10px;
+
+  text-align: left;
+}
+
+/* =========================
+   관리자 설정 모달
+========================= */
+
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(5, 3, 10, 0.82);
+
+  backdrop-filter: blur(8px);
+}
+
+
+.admin-modal {
+  width: 480px;
+  max-width: calc(100% - 40px);
+
+  max-height: 75vh;
+
+  padding: 24px;
+
+  overflow-y: auto;
+
+  background: rgba(20, 14, 30, 0.98);
+
+  border: 1px solid rgba(232, 121, 255, 0.4);
+  border-radius: 14px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 0 40px rgba(232, 121, 255, 0.14);
+}
+
+
+.admin-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 8px;
+}
+
+
+.admin-modal-header > div {
+  text-align: left;
+}
+
+
+.admin-modal-header span {
+  color: #e879ff;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+
+.admin-modal-header h2 {
+  margin: 4px 0 0 0;
+
+  color: white;
+
+  font-size: 22px;
+}
+
+
+.admin-modal-close {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+
+  color: white;
+
+  font-size: 24px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.admin-modal-close:hover {
+  background: rgba(255, 79, 123, 0.15);
+
+  border-color: rgba(255, 79, 123, 0.6);
+
+  color: #ff6b8f;
+}
+
+
+.admin-modal-description {
+  margin: 12px 0 18px 0;
+
+  color: #9d96a5;
+
+  font-size: 12px;
+  line-height: 1.6;
+
+  text-align: left;
+}
+
+
+/* =========================
+   랜덤 섞기
+========================= */
+
+.shuffle-button {
+  width: 100%;
+  height: 42px;
+
+  margin-bottom: 15px;
+
+  background: rgba(232, 121, 255, 0.08);
+
+  border: 1px solid rgba(232, 121, 255, 0.55);
+  border-radius: 7px;
+
+  color: #e879ff;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.shuffle-button:hover {
+  background: rgba(232, 121, 255, 0.18);
+
+  border-color: #e879ff;
+
+  color: white;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   관리자 선수 목록
+========================= */
+
+.admin-player-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+
+.admin-player-item {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 10px;
+
+  background: rgba(255, 255, 255, 0.025);
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+
+  box-sizing: border-box;
+}
+
+
+.admin-order-number {
+  width: 24px;
+
+  flex-shrink: 0;
+
+  color: #e879ff;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  text-align: center;
+}
+
+
+.admin-player-profile {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+.admin-player-image {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(232, 121, 255, 0.16),
+      rgba(255, 79, 123, 0.1)
+    );
+
+  border: 1px solid rgba(232, 121, 255, 0.3);
+  border-radius: 6px;
+
+  color: #e879ff;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+.admin-player-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.admin-player-profile > div:last-child {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  text-align: left;
+}
+
+
+.admin-player-profile strong {
+  overflow: hidden;
+
+  color: white;
+
+  font-size: 13px;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+.admin-player-profile span {
+  margin-top: 3px;
+
+  color: #817a87;
+
+  font-size: 10px;
+}
+
+
+/* =========================
+   순서 ↑ ↓
+========================= */
+
+.admin-order-buttons {
+  display: flex;
+
+  gap: 5px;
+}
+
+
+.admin-order-buttons button {
+  width: 32px;
+  height: 32px;
+
+  background: rgba(232, 121, 255, 0.06);
+
+  border: 1px solid rgba(232, 121, 255, 0.3);
+  border-radius: 6px;
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.admin-order-buttons button:hover:not(:disabled) {
+  background: rgba(232, 121, 255, 0.18);
+
+  border-color: #e879ff;
+}
+
+
+.admin-order-buttons button:disabled {
+  opacity: 0.2;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================
+   설정 완료
+========================= */
+
+.admin-save-button {
+  width: 100%;
+  height: 44px;
+
+  margin-top: 18px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 79, 123, 0.22),
+      rgba(232, 121, 255, 0.14)
+    );
+
+  border: 1px solid rgba(255, 79, 123, 0.7);
+  border-radius: 7px;
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.admin-save-button:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 79, 123, 0.32),
+      rgba(232, 121, 255, 0.24)
+    );
+
+  border-color: #ff4f7b;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   관리자 설정 버튼 비활성화
+========================= */
+
+.admin-setting-button:disabled {
+  opacity: 0.35;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+.admin-setting-button:disabled:hover {
+  background: rgba(232, 121, 255, 0.08);
+
+  color: #e879ff;
+
+  transform: none;
+}
+
+
+/* =========================
+   경매 종료
+========================= */
+
+.auction-finished {
+  padding: 35px 20px;
+
+  background: rgba(232, 121, 255, 0.035);
+
+  border: 1px solid rgba(232, 121, 255, 0.15);
+  border-radius: 10px;
+
+  text-align: center;
+}
+
+
+.auction-finished h2 {
+  margin: 0 0 8px 0;
+
+  color: white;
+
+  font-size: 22px;
+}
+
+
+.auction-finished p {
+  margin: 0;
+
+  color: #817a87;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   관리자 모달 스크롤바
+========================= */
+
+.admin-modal::-webkit-scrollbar {
+  width: 5px;
+}
+
+
+.admin-modal::-webkit-scrollbar-thumb {
+  background: rgba(232, 121, 255, 0.35);
+
+  border-radius: 10px;
+}
+
+/* =========================
+   관리자 설정 - 큰 모달
+========================= */
+
+.admin-modal-large {
+  width: 760px;
+}
+
+
+/* =========================
+   관리자 섹션 제목
+========================= */
+
+.admin-section-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin: 22px 0 12px 0;
+
+  text-align: left;
+}
+
+
+.admin-section-title > span {
+  width: 28px;
+  height: 28px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(232, 121, 255, 0.1);
+
+  border: 1px solid rgba(232, 121, 255, 0.35);
+  border-radius: 6px;
+
+  color: #e879ff;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+
+.admin-section-title > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+
+.admin-section-title strong {
+  color: white;
+
+  font-size: 14px;
+}
+
+
+.admin-section-title small {
+  color: #81798c;
+
+  font-size: 9px;
+}
+
+
+/* =========================
+   팀 설정
+========================= */
+
+.admin-team-settings {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+
+.admin-team-setting {
+  padding: 12px;
+
+  background: rgba(255, 255, 255, 0.025);
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+
+  transition: 0.2s;
+}
+
+
+.admin-team-setting.active {
+  background: rgba(232, 121, 255, 0.05);
+
+  border-color: rgba(232, 121, 255, 0.4);
+}
+
+
+.admin-team-setting-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 11px;
+}
+
+
+.admin-team-setting-header strong {
+  color: white;
+
+  font-size: 13px;
+}
+
+
+.admin-team-setting-header span {
+  color: #716979;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+
+.admin-team-setting.active
+.admin-team-setting-header span {
+  color: #e879ff;
+}
+
+
+.admin-team-setting label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  margin-top: 8px;
+
+  color: #8f879e;
+
+  font-size: 9px;
+
+  text-align: left;
+}
+
+
+.admin-team-setting select,
+.admin-team-setting input {
+  width: 100%;
+  height: 36px;
+
+  padding: 0 9px;
+
+  background: rgba(8, 8, 20, 0.85);
+
+  border: 1px solid rgba(232, 121, 255, 0.22);
+  border-radius: 6px;
+
+  box-sizing: border-box;
+
+  color: white;
+
+  outline: none;
+}
+
+
+.admin-team-setting select:focus,
+.admin-team-setting input:focus {
+  border-color: rgba(232, 121, 255, 0.7);
+}
+
+
+/* =========================
+   경매 설정 구분
+========================= */
+
+.admin-auction-section {
+  margin-top: 25px;
+
+  padding-top: 18px;
+
+  border-top:
+    1px solid rgba(232, 121, 255, 0.12);
+}
+
+
+/* =========================
+   경매 참가자 없음
+========================= */
+
+.admin-empty-players {
+  padding: 25px 15px;
+
+  background: rgba(255, 255, 255, 0.02);
+
+  border: 1px dashed rgba(232, 121, 255, 0.2);
+  border-radius: 7px;
+
+  color: #81798c;
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   활성 팀 없음
+========================= */
+
+.no-active-team {
+  padding: 30px 15px;
+
+  background: rgba(232, 121, 255, 0.03);
+
+  border: 1px dashed rgba(232, 121, 255, 0.2);
+  border-radius: 8px;
+
+  color: #81798c;
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   내 팀 안내
+========================= */
+
+.leader-message {
+  color: #e879ff;
+}
+
+
+/* 작은 화면 */
+
+@media (max-width: 800px) {
+
+  .admin-team-settings {
+    grid-template-columns: 1fr;
+  }
+
+}

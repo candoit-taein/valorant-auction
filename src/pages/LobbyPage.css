@@ -1,0 +1,489 @@
+/* =========================
+   로비 전체
+========================= */
+
+.lobby-page {
+  width: 100%;
+  height: 100vh;
+
+  background:
+    linear-gradient(
+      rgba(5, 5, 10, 0.55),
+      rgba(5, 5, 10, 0.8)
+    ),
+    url('/lobby-bg.png');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  padding: 60px;
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  display: grid;
+
+  grid-template-columns: 1.6fr 1fr;
+  grid-template-rows: 1fr 1fr;
+
+  gap: 20px;
+}
+
+
+/* =========================
+   방 만들기
+========================= */
+
+.create-room {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+
+/* =========================
+   방 참가하기
+========================= */
+
+.join-room {
+  grid-column: 1;
+  grid-row: 2;
+
+  cursor: default;
+}
+
+
+/* =========================
+   방 만들기 + 참가하기 공통
+========================= */
+
+.create-room,
+.join-room {
+  width: 100%;
+
+  padding: 35px;
+
+  background: rgba(8, 8, 20, 0.78);
+
+  border: 1px solid rgba(210, 120, 255, 0.65);
+  border-radius: 10px;
+
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: flex-start;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+  transition: 0.25s;
+}
+
+
+/* 방 만들기만 클릭 가능 */
+
+.create-room {
+  cursor: pointer;
+}
+
+
+/* 방 만들기 마우스 올렸을 때 */
+
+.create-room:hover {
+  background: rgba(40, 20, 65, 0.88);
+
+  border-color: #e879ff;
+
+  transform: translateY(-3px);
+}
+
+
+/* =========================
+   방 만들기 / 참가하기 제목
+========================= */
+
+.create-room h2,
+.join-room h2 {
+  margin: 0;
+
+  font-size: 32px;
+
+  color: #ff4f7b;
+}
+
+
+/* =========================
+   방 만들기 / 참가하기 설명
+========================= */
+
+.create-room p,
+.join-room p {
+  margin-top: 10px;
+  margin-bottom: 0;
+
+  color: #d0c9df;
+
+  font-size: 15px;
+}
+
+
+/* =========================
+   방 참가 코드 입력 영역
+========================= */
+
+.join-room-form {
+  width: 100%;
+
+  margin-top: 22px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+/* =========================
+   방 코드 입력창
+========================= */
+
+.join-room-form input {
+  flex: 1;
+
+  min-width: 0;
+
+  height: 52px;
+
+  padding: 0 18px;
+
+  box-sizing: border-box;
+
+  background: rgba(15, 10, 30, 0.9);
+
+  border: 1px solid rgba(210, 120, 255, 0.55);
+
+  border-radius: 8px;
+
+  outline: none;
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  letter-spacing: 3px;
+
+  transition: 0.25s;
+}
+
+
+/* 방 코드 placeholder */
+
+.join-room-form input::placeholder {
+  color: #8f879e;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  letter-spacing: 1px;
+}
+
+
+/* 방 코드 입력창 선택 */
+
+.join-room-form input:focus {
+  border-color: #e879ff;
+
+  background: rgba(30, 15, 50, 0.95);
+
+  box-shadow:
+    0 0 0 2px rgba(232, 121, 255, 0.12),
+    0 0 20px rgba(232, 121, 255, 0.12);
+}
+
+
+/* =========================
+   참가하기 버튼
+========================= */
+
+.join-room-form button {
+  height: 52px;
+
+  padding: 0 25px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 79, 123, 0.12);
+
+  border: 1px solid #ff4f7b;
+  border-radius: 8px;
+
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition: 0.25s;
+}
+
+
+/* 참가 버튼 마우스 */
+
+.join-room-form button:hover {
+  background: #ff4f7b;
+
+  border-color: #ff4f7b;
+
+  box-shadow:
+    0 0 20px rgba(255, 79, 123, 0.3);
+
+  transform: translateY(-2px);
+}
+
+
+/* 참가 버튼 클릭 */
+
+.join-room-form button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================
+   내 프로필
+========================= */
+
+.my-profile {
+  grid-column: 2;
+  grid-row: 1;
+
+  width: 100%;
+
+  padding: 25px;
+
+  background: rgba(8, 8, 20, 0.78);
+
+  border: 1px solid rgba(210, 120, 255, 0.65);
+  border-radius: 10px;
+
+  color: white;
+
+  text-align: left;
+
+  box-sizing: border-box;
+}
+
+
+/* 내 프로필 제목 */
+
+.my-profile h2 {
+  margin: 0 0 20px 0;
+
+  padding-bottom: 12px;
+
+  font-size: 24px;
+
+  color: #ff4f7b;
+
+  border-bottom:
+    1px solid rgba(210, 120, 255, 0.4);
+}
+
+
+/* =========================
+   프로필 내용
+========================= */
+
+.profile-content {
+  display: flex;
+
+  align-items: center;
+
+  gap: 30px;
+}
+
+
+/* =========================
+   프로필 사진
+========================= */
+
+.profile-image {
+  width: 140px;
+  height: 140px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(15, 10, 30, 0.9);
+
+  border: 2px solid #e879ff;
+  border-radius: 12px;
+
+  color: #e879ff;
+
+  font-size: 32px;
+  font-weight: bold;
+
+  overflow: hidden;
+}
+
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* =========================
+   프로필 정보
+========================= */
+
+.profile-info {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 8px;
+}
+
+
+.profile-info p {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 15px;
+}
+
+
+/* 닉네임 */
+
+.profile-info .profile-nickname {
+  margin: 0 0 8px 0;
+
+  font-size: 26px;
+
+  font-weight: bold;
+
+  color: #ffffff;
+}
+
+
+/* =========================
+   티어
+========================= */
+
+.rank-info {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: white;
+}
+
+
+.rank-info img {
+  width: 45px;
+  height: 45px;
+
+  object-fit: contain;
+}
+
+
+/* =========================
+   프로필 한마디
+========================= */
+
+.profile-message {
+  margin-top: 12px !important;
+
+  padding-top: 12px;
+
+  border-top:
+    1px solid rgba(210, 120, 255, 0.4);
+
+  color: #ffffff !important;
+
+  font-size: 17px !important;
+
+  font-weight: 700;
+
+  font-style: normal;
+
+  letter-spacing: 0.3px;
+}
+
+
+/* =========================
+   프로필 설정
+========================= */
+
+.profile-setting {
+  grid-column: 2;
+  grid-row: 2;
+
+  width: 100%;
+
+  padding: 25px;
+
+  background: rgba(8, 8, 20, 0.78);
+
+  border: 1px solid rgba(210, 120, 255, 0.65);
+
+  border-radius: 10px;
+
+  color: white;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  transition: 0.25s;
+}
+
+
+.profile-setting h2 {
+  margin: 0;
+
+  font-size: 24px;
+
+  color: #ff4f7b;
+}
+
+
+.profile-setting p {
+  color: #d0c9df;
+
+  font-size: 15px;
+}
+
+
+/* 프로필 설정 마우스 */
+
+.profile-setting:hover {
+  background: rgba(40, 20, 65, 0.88);
+
+  border-color: #e879ff;
+
+  transform: translateY(-3px);
+}
