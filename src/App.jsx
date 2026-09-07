@@ -55,6 +55,122 @@ function App() {
 
 
   // =========================
+  // Supabase Auth용 아이디 변환
+  // =========================
+
+  const makeAuthEmail = (id) => {
+
+    const bytes =
+      new TextEncoder().encode(
+        id.trim()
+      )
+
+    const encodedId =
+      Array.from(bytes)
+        .map((byte) =>
+          byte
+            .toString(16)
+            .padStart(2, '0')
+        )
+        .join('')
+
+    return `user-${encodedId}@valorant-auction.local`
+  }
+
+
+  // =========================
+  // Supabase Auth 유저를
+  // 기존 registeredUser 형태로 변환
+  // =========================
+
+  const convertAuthUser = (authUser) => {
+
+    if (!authUser) {
+      return null
+    }
+
+    const metadata =
+      authUser.user_metadata || {}
+
+    return {
+      userId:
+        metadata.userId || '',
+
+      nickname:
+        metadata.nickname || '',
+
+      highestTier:
+        metadata.highestTier || '',
+
+      currentTier:
+        metadata.currentTier || '',
+
+      mainPosition:
+        metadata.mainPosition || '',
+
+      message:
+        metadata.message || '',
+
+      profileImage:
+        metadata.profileImage || ''
+    }
+  }
+
+
+  // =========================
+  // 새로고침해도 로그인 유지
+  // =========================
+
+  useEffect(() => {
+
+    let mounted = true
+
+    const restoreSession =
+      async () => {
+
+        const {
+          data,
+          error
+        } =
+          await supabase.auth.getSession()
+
+        if (error) {
+
+          console.error(
+            '로그인 세션 확인 오류:',
+            error
+          )
+
+          return
+        }
+
+        if (
+          mounted &&
+          data.session?.user
+        ) {
+
+          setRegisteredUser(
+            convertAuthUser(
+              data.session.user
+            )
+          )
+
+          setPage(
+            'lobby'
+          )
+        }
+      }
+
+    restoreSession()
+
+    return () => {
+      mounted = false
+    }
+
+  }, [])
+
+
+  // =========================
   // 실제 방 참가자
   // =========================
 
@@ -741,165 +857,310 @@ function App() {
   // 회원가입
   // =========================
 
-  const handleSignup = () => {
+  const handleSignup =
+    async () => {
 
-    if (
-      userId === ''
-    ) {
+      const trimmedUserId =
+        userId.trim()
 
-      alert(
-        '아이디를 입력해주세요.'
+      const trimmedNickname =
+        nickname.trim()
+
+
+      if (
+        trimmedUserId === ''
+      ) {
+
+        alert(
+          '아이디를 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        password === ''
+      ) {
+
+        alert(
+          '비밀번호를 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        password.length < 6
+      ) {
+
+        alert(
+          '비밀번호는 6자 이상으로 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        trimmedNickname === ''
+      ) {
+
+        alert(
+          '닉네임을 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        highestTier === ''
+      ) {
+
+        alert(
+          '최고 티어를 선택해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        currentTier === ''
+      ) {
+
+        alert(
+          '현재 티어를 선택해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        mainPosition === ''
+      ) {
+
+        alert(
+          '주 포지션을 선택해주세요.'
+        )
+
+        return
+      }
+
+
+      const authEmail =
+        makeAuthEmail(
+          trimmedUserId
+        )
+
+
+      const {
+        data,
+        error
+      } =
+        await supabase.auth.signUp({
+          email: authEmail,
+
+          password,
+
+          options: {
+            data: {
+              userId:
+                trimmedUserId,
+
+              nickname:
+                trimmedNickname,
+
+              highestTier,
+
+              currentTier,
+
+              mainPosition,
+
+              message: '',
+
+              profileImage: ''
+            }
+          }
+        })
+
+
+      if (error) {
+
+        console.error(
+          '회원가입 오류:',
+          error
+        )
+
+        if (
+          error.message
+            .toLowerCase()
+            .includes('already registered')
+        ) {
+
+          alert(
+            '이미 사용 중인 아이디입니다.'
+          )
+
+        } else {
+
+          alert(
+            `회원가입 실패: ${error.message}`
+          )
+        }
+
+        return
+      }
+
+
+      if (!data.user) {
+
+        alert(
+          '회원가입에 실패했습니다. 다시 시도해주세요.'
+        )
+
+        return
+      }
+
+
+      // Confirm email을 꺼둔 상태에서는
+      // 회원가입 직후 세션이 생길 수 있으므로
+      // 로그인 화면으로 보내기 전에 로그아웃
+      await supabase.auth.signOut()
+
+
+      setRegisteredUser(
+        null
       )
 
-      return
-    }
-
-
-    if (
-      password === ''
-    ) {
-
-      alert(
-        '비밀번호를 입력해주세요.'
+      setUserId(
+        ''
       )
 
-      return
-    }
-
-
-    if (
-      nickname === ''
-    ) {
-
-      alert(
-        '닉네임을 입력해주세요.'
+      setPassword(
+        ''
       )
 
-      return
-    }
-
-
-    if (
-      highestTier === ''
-    ) {
-
-      alert(
-        '최고 티어를 선택해주세요.'
+      setNickname(
+        ''
       )
 
-      return
-    }
-
-
-    if (
-      currentTier === ''
-    ) {
-
-      alert(
-        '현재 티어를 선택해주세요.'
+      setHighestTier(
+        ''
       )
 
-      return
-    }
-
-
-    if (
-      mainPosition === ''
-    ) {
-
-      alert(
-        '주 포지션을 선택해주세요.'
+      setCurrentTier(
+        ''
       )
 
-      return
+      setMainPosition(
+        ''
+      )
+
+
+      alert(
+        '회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.'
+      )
+
+      setPage(
+        'login'
+      )
     }
-
-
-    setRegisteredUser({
-      userId,
-      password,
-      nickname,
-      highestTier,
-      currentTier,
-      mainPosition,
-
-      message: '',
-      profileImage: ''
-    })
-
-
-    alert(
-      '회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.'
-    )
-
-    setPage(
-      'login'
-    )
-  }
 
 
   // =========================
   // 로그인
   // =========================
 
-  const handleLogin = () => {
+  const handleLogin =
+    async () => {
 
-    if (
-      loginId === ''
-    ) {
+      const trimmedLoginId =
+        loginId.trim()
 
-      alert(
-        '아이디를 입력해주세요.'
+
+      if (
+        trimmedLoginId === ''
+      ) {
+
+        alert(
+          '아이디를 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        loginPassword === ''
+      ) {
+
+        alert(
+          '비밀번호를 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      const authEmail =
+        makeAuthEmail(
+          trimmedLoginId
+        )
+
+
+      const {
+        data,
+        error
+      } =
+        await supabase.auth
+          .signInWithPassword({
+            email: authEmail,
+
+            password:
+              loginPassword
+          })
+
+
+      if (
+        error ||
+        !data.user
+      ) {
+
+        console.error(
+          '로그인 오류:',
+          error
+        )
+
+        alert(
+          '아이디 또는 비밀번호가 일치하지 않습니다.'
+        )
+
+        return
+      }
+
+
+      const loggedInUser =
+        convertAuthUser(
+          data.user
+        )
+
+
+      setRegisteredUser(
+        loggedInUser
       )
 
-      return
-    }
-
-
-    if (
-      loginPassword === ''
-    ) {
-
-      alert(
-        '비밀번호를 입력해주세요.'
+      setLoginPassword(
+        ''
       )
 
-      return
-    }
-
-
-    if (
-      registeredUser === null
-    ) {
-
-      alert(
-        '가입된 계정이 없습니다. 회원가입을 먼저 해주세요.'
+      setPage(
+        'lobby'
       )
-
-      return
     }
-
-
-    if (
-      loginId !==
-        registeredUser.userId ||
-
-      loginPassword !==
-        registeredUser.password
-    ) {
-
-      alert(
-        '아이디 또는 비밀번호가 일치하지 않습니다.'
-      )
-
-      return
-    }
-
-
-    setPage(
-      'lobby'
-    )
-  }
 
 
   return (
